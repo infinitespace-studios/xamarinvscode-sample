@@ -341,7 +341,7 @@ If you don't want to use the default port you can always change it to something 
 But if you change it in the `launch.json` you will also need to provide the msbuild properties
 in the `Run` task in `tasks.json` which defines the port you want to use. The 
 property names you need to change are `AndroidSdbTargetPort` and `AndroidSdbHostPort`.
-The `AndroidSdbhostPort` is the port which will be used on the device. The `AndroidSdbTargetPort`
+The `AndroidSdbTargetPort` is the port which will be used on the device. The `AndroidSdbHostPort`
 is the one that is opened on the PC. So if you have trouble using the default port
 you can try adding these properties to change it. I'll leave that particular challenge
 to you :)
