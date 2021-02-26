@@ -12,5 +12,13 @@
             "port": 10000,
             "preLaunchTask": "Run",
         },
+        {
+            "name": "DebugAndroidNet6",
+            "type": "mono",
+            "request": "attach",
+            "address": "localhost",
+            "port": 10000,
+            "preLaunchTask": "RunDotNet",
+        },
     ]
 }

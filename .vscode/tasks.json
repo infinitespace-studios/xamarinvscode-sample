@@ -6,7 +6,7 @@
         {
             "label": "Build",
             "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Build /p:Configuration=${input:configuration}",
+            "command": "msbuild ${input:project} /restore /t:${input:target} /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -16,40 +16,39 @@
             ]
         },
         {
-            "label": "Clean",
-            "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Clean /p:Configuration=${input:configuration}",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$msCompile"
-            ]
-        },
-        {
-            "label": "Install",
-            "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Install /p:Configuration=${input:configuration}",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$msCompile"
-            ]
-        },
-        {
+            // special target as it uses additional arguments
             "label": "Run",
             "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:_Run /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
+            "command": "msbuild ${input:project} /restore \"/t:Install;_Run\" /p:AndroidAttachDebugger=${input:attach} /p:AndroidSdbHostPort=10000 /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": [
-                "Install"
-            ],
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "BuildDotNet",
+            "type": "shell",
+            "command": "dotnet build ${input:project} -t:${input:target} -p:Configuration=${input:configuration}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            // special target as it uses additional arguments
+            "label": "RunDotNet",
+            "type": "shell",
+            "command": "dotnet build ${input:project} \"-t:Install;_Run\" -p:AndroidAttachDebugger=${input:attach} -p:AndroidSdbHostPort=10000 -p:Configuration=${input:configuration}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": [
                 "$msCompile"
             ]
@@ -60,8 +59,46 @@
           "id": "configuration",
           "type": "pickString",
           "default": "Debug",
-          "description": "The Build Configuration",
-          "options": [ "Debug", "Release"]
-        }
+          "description": "Select msbuild Build Configuration.",
+          "options": [
+              "Debug",
+              "Release"
+            ]
+        },
+        {
+            // Add additional projects here. They will be available in the drop down
+            // in vscode.
+            "id": "project",
+            "type": "pickString",
+            "default": "MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj",
+            "description": "Pick the Project you want to build.",
+            "options": [
+                "MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj",
+                "MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.net6.csproj",
+            ]
+        },
+        {
+            "id": "target",
+            "type": "pickString",
+            "default": "Build",
+            "description": "Select MSBuild Target to run.",
+            "options": [
+                "Build",
+                "Install",
+                "SignAndroidPackage",
+                "_Run",
+                "Clean"
+            ]
+        },
+        {
+            "id": "attach",
+            "type": "pickString",
+            "default": "Build",
+            "description": "Attach Debugger?",
+            "options": [
+                "true",
+                "false",
+            ]
+        },
       ]
 }
