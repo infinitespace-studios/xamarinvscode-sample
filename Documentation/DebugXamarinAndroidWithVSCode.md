@@ -64,7 +64,7 @@ in the `tasks.json`. For now you will only see `Build`. Hit enter again and your
 app should build. If it doesn't work check the path to your `csproj` to make sure
 it is correct.
 
-## Picking a Configurtion
+## Picking a Configuration
 
 This is ok but there is one thing that would good to change. Currently we can only
 build the `Debug` configuration as it is hardcoded. It would be nice to be able to
@@ -120,7 +120,7 @@ get this.
             "id": "configuration",
             "type": "pickString",
             "default": "Debug",
-            "description": "The Build Configuration",
+            "description": "Select msbuild Build Configuration.",
             "options": [ "Debug", "Release"]
         }
     ]
@@ -132,7 +132,12 @@ get this.
 We have a `Build` task, but we also want to be able to install and run the app as well. 
 To do that we need to add a few extra tasks. These will call different MSBuild targets,
 namely `Install`, `Run`, and `Clean` (because we sometimes want to clean right :).
-Lets look at the code for `Install` and `Clean`.
+Lets look at the code for `Install` and `Clean`. 
+
+We could just duplicate the task, but we can use `inputs` again to allow the user to 
+choose the target. So lets add a new `inputs` element which is similar to the `configuration`
+one. It will show the user a list of targets to pick from. We can then use 
+`${input.target}` to fill in the target. 
 
 ```json
 {
@@ -143,31 +148,7 @@ Lets look at the code for `Install` and `Clean`.
         {
             "label": "Build",
             "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Build /p:Configuration=${input:configuration}",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$msCompile"
-            ]
-        },
-        {
-            "label": "Clean",
-            "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Clean /p:Configuration=${input:configuration}",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$msCompile"
-            ]
-        },
-        {
-            "label": "Install",
-            "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Install /p:Configuration=${input:configuration}",
+            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:${input.target} /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -182,48 +163,54 @@ Lets look at the code for `Install` and `Clean`.
             "id": "configuration",
             "type": "pickString",
             "default": "Debug",
-            "description": "The Build Configuration",
+            "description": "Select msbuild Build Configuration.",
             "options": [ "Debug", "Release"]
-        }
+        },
+        {
+            "id": "target",
+            "type": "pickString",
+            "default": "Build",
+            "description": "Select MSBuild Target to run.",
+            "options": [
+                "Build",
+                "Install",
+                "SignAndroidPackage",
+                "_Run",
+                "Clean"
+            ]
+        },
     ]
 }
 ```
 
-We added two more tasks. The only real difference between them is the `label` and which target 
-they run. Other than that , they are identical to the `Build` task. The next thing we need
-is the `Run` task. This is the one that will be responsible for starting the app on the device.
-Lets look at this one in isolation first before we put in in with the others.
+The next thing we need is the `Run` task. This is the one that will be responsible for starting the app on the device.
+Lets look at this one in isolation first before we put in in with the others. We keep this one separate as it needs
+different arguments.
 
 ```json
 {
     "label": "Run",
     "type": "shell",
-    "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:_Run /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
+    "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore \"/t:Install;_Run\" /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
     "group": {
         "kind": "build",
         "isDefault": true
     },
-    "dependsOn": [
-        "Install"
-    ],
     "problemMatcher": [
         "$msCompile"
     ]
 },
 ```
 
-You can see we changed the `label` and the target which the command will run. We now call
-`_Run`. This is a special target in Xamarin.Android, it is used to start the application 
-on the device. Technically it is an internal target, but it has been there for many years :). 
+You can see we changed the `label` and the target which the command will run. We now call the
+`Install` and `_Run` targets. This is a special target in Xamarin.Android, it is used to start
+the application  on the device. Technically it is an internal target, but it has been there for
+many years :). 
+
 The `_Run` target has an additional property which can be used to tell the runtime to wait
 for a debugger. This is the `AndroidAttachDebugger` property. By passing `true` here , we are
 telling the runtime on the device to wait for a debugger before continuing the app. This will
 allow us to use the `launch.json` later to connect to the runtime and debug our app. 
-
-The next change is the new `dependsOn` section. This is where we tell VSCode which other 
-tasks this one needs to run first. Because the `_Run` target just runs the app, we need to 
-make sure it is installed first. So by using `dependsOn` we can tell VSCode to run the 
-`Install` task before running the `Run` tasks.
 
 So here is the final `tasks.json`.
 
@@ -236,31 +223,7 @@ So here is the final `tasks.json`.
         {
             "label": "Build",
             "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Build /p:Configuration=${input:configuration}",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$msCompile"
-            ]
-        },
-        {
-            "label": "Clean",
-            "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Clean /p:Configuration=${input:configuration}",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$msCompile"
-            ]
-        },
-        {
-            "label": "Install",
-            "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Install /p:Configuration=${input:configuration}",
+            "command": "msbuild ${input.project} /restore /t:${input.target} /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -272,7 +235,7 @@ So here is the final `tasks.json`.
         {
             "label": "Run",
             "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:_Run /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
+            "command": "msbuild ${input.project} /restore \"/t:Install;_Run\" /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -292,10 +255,38 @@ So here is the final `tasks.json`.
             "default": "Debug",
             "description": "The Build Configuration",
             "options": [ "Debug", "Release"]
-        }
+        },
+        {
+            "id": "target",
+            "type": "pickString",
+            "default": "Build",
+            "description": "Select MSBuild Target to run.",
+            "options": [
+                "Build",
+                "Install",
+                "SignAndroidPackage",
+                "_Run",
+                "Clean"
+            ]
+        },
+        {
+            // Add additional projects here. They will be available in the drop down
+            // in vscode.
+            "id": "project",
+            "type": "pickString",
+            "default": "MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj",
+            "description": "Pick the Project you want to build.",
+            "options": [
+                "MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj",
+            ]
+        },
     ]
 }
 ```
+
+Note we also added a `project` item to the `inputs`. This is so we can control the list 
+of projects from one location. It also allows us to support multiple projects in the same
+workspace.
 
 ![Launch Application](tasks.gif)
 
