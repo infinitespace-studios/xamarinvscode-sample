@@ -6,7 +6,7 @@
         {
             "label": "Build",
             "type": "shell",
-            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:Build /p:Configuration=${input:configuration}",
+            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Build /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -18,7 +18,7 @@
         {
             "label": "Clean",
             "type": "shell",
-            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:Clean /p:Configuration=${input:configuration}",
+            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Clean /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -30,7 +30,7 @@
         {
             "label": "Install",
             "type": "shell",
-            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:Install /p:Configuration=${input:configuration}",
+            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:Install /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -42,7 +42,7 @@
         {
             "label": "Run",
             "type": "shell",
-            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:_Run /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
+            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:_Run /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -57,7 +57,7 @@
         {
             "label": "Instrument",
             "type": "shell",
-            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:_Instrument /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
+            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:_Instrument /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
             "group": {
                 "kind": "build",
                 "isDefault": true
