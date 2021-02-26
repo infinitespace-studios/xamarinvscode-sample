@@ -1,0 +1,79 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:Build /p:Configuration=${input:configuration}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:Clean /p:Configuration=${input:configuration}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Install",
+            "type": "shell",
+            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:Install /p:Configuration=${input:configuration}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Run",
+            "type": "shell",
+            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:_Run /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "Install"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "label": "Instrument",
+            "type": "shell",
+            "command": "msbuild foofoo.Android/foofoo.Android.csproj /restore /t:_Instrument /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+    ],
+    "inputs": [
+        {
+          "id": "configuration",
+          "type": "pickString",
+          "default": "Debug",
+          "description": "The Build Configuration",
+          "options": [ "Debug", "Release"]
+        }
+      ]
+}
