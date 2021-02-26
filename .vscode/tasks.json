@@ -54,18 +54,6 @@
                 "$msCompile"
             ]
         },
-        {
-            "label": "Instrument",
-            "type": "shell",
-            "command": "msbuild MyFormsApp/MyFormsApp.Android/MyFormsApp.Android.csproj /restore /t:_Instrument /p:AndroidAttachDebugger=true /p:Configuration=${input:configuration}",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$msCompile"
-            ]
-        },
     ],
     "inputs": [
         {

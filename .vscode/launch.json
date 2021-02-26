@@ -12,13 +12,5 @@
             "port": 10000,
             "preLaunchTask": "Run",
         },
-        {
-            "name": "InstrumentAndroid",
-            "type": "mono",
-            "request": "attach",
-            "address": "localhost",
-            "port": 10000,
-            "preLaunchTask": "Instrument",
-        }
     ]
 }
