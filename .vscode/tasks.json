@@ -19,7 +19,7 @@
             // special target as it uses additional arguments
             "label": "Run",
             "type": "shell",
-            "command": "msbuild ${input:project} /restore \"/t:Install;_Run\" /p:AndroidAttachDebugger=${input:attach} /p:AndroidSdbHostPort=10000 /p:Configuration=${input:configuration}",
+            "command": "msbuild ${input:project} /restore \"/t:Install;_Run\" /p:Configuration=${input:configuration} /p:AndroidAttachDebugger=${input:attach} /p:AndroidSdbHostPort=10000",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -31,7 +31,7 @@
         {
             "label": "BuildDotNet",
             "type": "shell",
-            "command": "dotnet build ${input:project} -t:${input:target} -p:Configuration=${input:configuration}",
+            "command": "dotnet build ${input:project} -p:Configuration=${input:configuration} -t:${input:target}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -44,7 +44,7 @@
             // special target as it uses additional arguments
             "label": "RunDotNet",
             "type": "shell",
-            "command": "dotnet build ${input:project} \"-t:Install;_Run\" -p:AndroidAttachDebugger=${input:attach} -p:AndroidSdbHostPort=10000 -p:Configuration=${input:configuration}",
+            "command": "dotnet build ${input:project} \"-t:Run\" --no-restore -p:TargetFramework=${input:targetframework} -p:Configuration=${input:configuration} -p:AndroidAttachDebugger=${input:attach} -p:AndroidSdbHostPort=10000",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -86,8 +86,16 @@
                 "Build",
                 "Install",
                 "SignAndroidPackage",
-                "_Run",
                 "Clean"
+            ]
+        },
+        {
+            "id": "targetframework",
+            "type": "pickString",
+            "default": "Build",
+            "description": "Select TargetFramework",
+            "options": [
+                "net6.0-android",
             ]
         },
         {

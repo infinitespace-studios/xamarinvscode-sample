@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "DebugAndroid",
+            "name": "Debug",
             "type": "mono",
             "request": "attach",
             "address": "localhost",
@@ -13,7 +13,7 @@
             "preLaunchTask": "Run",
         },
         {
-            "name": "DebugAndroidNet6",
+            "name": "DebugNet6",
             "type": "mono",
             "request": "attach",
             "address": "localhost",
